@@ -5,20 +5,20 @@ const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({});
   const [searchTerm, setSearchTerm] = useState("batman");
   const [errorMessage, setErrorMessage] = useState(null);
-  const [data, setData] = useState({});
 
   return (
     <AppContext.Provider
       value={{
         loading,
-        errorMessage,
-        setSearchTerm,
-        setLoading,
         data,
         searchTerm,
+        errorMessage,
+        setLoading,
         setData,
+        setSearchTerm,
         setErrorMessage,
       }}
     >
