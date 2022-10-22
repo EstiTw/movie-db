@@ -1,17 +1,29 @@
-// import React, { useEffect } from "react";
-// import { useGlobalContext } from "./context";
+import { useEffect, useCallback } from "react";
+import { useGlobalContext } from "./context";
 
-// export const useFetch = (url) => {
-//   const { setProducts, setLoading } = useGlobalContext();
+export const useFetch = (url) => {
+  const { setLoading, setErrorMessage, setData } = useGlobalContext();
 
-//   const getProducts = async () => {
-//     const response = await fetch(url);
-//     const items = await response.json();
-//     setProducts(items);
-//     setLoading(false);
-//   };
+  const getData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      const { Response, Error } = data;
+      if (Response === "False") {
+        setErrorMessage(Error);
+        setData(null);
+      } else {
+        setData(data);
+        setErrorMessage(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  }, [url]);
 
-//   useEffect(() => {
-//     getProducts();
-//   }, [url]);
-// };
+  useEffect(() => {
+    getData();
+  }, [getData]);
+};
