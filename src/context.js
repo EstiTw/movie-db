@@ -1,7 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 // make sure to use https
 export const API_ENDPOINT = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_MOVIE_API_KEY}`;
-// console.log(API_ENDPOINT);
 const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
@@ -9,31 +8,50 @@ const AppProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState("ba");
   const [movies, setMovies] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  console.log("errorMessage", errorMessage, "movies", movies);
+  const [defaultMovies, setDefaultMovies] = useState([]);
 
-  const fetchMovies = async () => {
+  const fetchMovies = useCallback(async () => {
     setLoading(true);
-    setErrorMessage("");
     try {
       const response = await fetch(`${API_ENDPOINT}&s=${searchTerm}`);
       const data = await response.json();
       const { Response } = data;
-      // console.log(data, Response);
       if (Response === "False") {
         setErrorMessage(data.Error);
-        setSearchTerm("batman");
+        setMovies(defaultMovies);
       } else {
         setMovies(data.Search);
+        setErrorMessage("");
       }
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
-  };
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchMovies();
-  }, [searchTerm]);
+  }, [searchTerm, fetchMovies]);
+
+  useEffect(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_ENDPOINT}&s=batman`);
+      const data = await response.json();
+      const { Response } = data;
+      if (Response === "False") {
+        setDefaultMovies([]);
+      } else {
+        setDefaultMovies(data.Search);
+        setMovies(data.Search);
+        setErrorMessage("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  }, []);
+
   return (
     <AppContext.Provider
       value={{ loading, movies, errorMessage, setSearchTerm }}

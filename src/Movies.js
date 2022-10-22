@@ -7,25 +7,16 @@ const url =
 const Movies = () => {
   const { loading, movies } = useGlobalContext();
 
-  if (loading) return <h2>Loading..</h2>;
-  if (movies.length < 1)
-    return <h2>no cocktails matched your search criteria</h2>;
-  console.log(movies);
+  if (loading) return <div className="loading" />;
 
   return (
     <section className="movies">
       {movies.map((movie) => {
-        const {
-          Poster: poster,
-          Title: title,
-          Type: type,
-          Year: year,
-          imdbID: id,
-        } = movie;
+        const { Poster: image, Title: title, Year: year, imdbID: id } = movie;
         return (
-          <Link to={`/movies/${id}`}>
-            <article key={id} className="movie">
-              <img src={poster || url} alt={title} />
+          <Link to={`/movies/${id}`} key={id}>
+            <article className="movie">
+              <img src={image || url} alt={title} />
               <div className="movie-info">
                 <h4>{title}</h4>
                 <p>{year}</p>
